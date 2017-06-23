@@ -1,0 +1,46 @@
+#!/bin/bash
+
+reset="\e[0m"
+red="\e[0;31m"
+green="\e[0;32m"
+yellow="\e[0;33m"
+cyan="\e[0;36m"
+white="\e[0;37m"
+
+yarn="$(which yarn)";
+if [ $? != 0 ] ; then
+    yarn="$HOME/.yarn/bin/yarn"
+fi
+
+install_yarn=0
+
+yarn_v="$($yarn -V 2>/dev/null)"
+
+if [ $? != 0 ] ; then
+    printf "$red> yarn is not installed\n$cyan> yarn install:$reset\n"
+    install_yarn=1
+else 
+    printf "$green> current yarn version: $yarn_v$reset\n"
+    if [ "$1" == '-c' ] ; then 
+        printf "$yellow> check remote yarn version...$reset\n";
+        last_v="$(curl -sL https://yarnpkg.com/latest-version)"
+        printf "$cyan> remote yarn version: $last_v$reset\n"
+        if [ $yarn_v \< $last_v ] ; then
+            printf "$cyan> yarn upgrade:$reset\n"
+            install_yarn=1
+        fi
+    fi
+fi
+
+if [ $install_yarn == 1 ] ; then
+    curl -o- -L https://yarnpkg.com/install.sh | bash
+    if [ $? != 0 ] ; then
+        exit 1
+    fi
+fi
+
+cd "$(dirname $0)"
+printf "$green> install dependence: $reset\n"
+
+
+$yarn
