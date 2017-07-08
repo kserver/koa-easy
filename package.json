@@ -23,9 +23,11 @@
     "url": "git+https://github.com/kserver/koa-easy.git"
   },
   "dependencies": {
+    "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
     "koa-compose": "^4.0.0",
     "koa-session": "^5.4.0",
+    "lodash": "^4.17.4",
     "pug": "^2.0.0-rc.2"
   }
 }

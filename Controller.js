@@ -1,10 +1,9 @@
 
 const pug = require('pug');
 const path = require('path');
-const ActionTrigger = require('./ActionTrigger');
 const Route = require('./Route');
 const { appRoot } = require('./utils');
-
+global.require = require;
 const pugCompileOptions = {
     cache: true,
     doctype: 'html'
@@ -92,7 +91,7 @@ module.exports = class Controller {
     }
     async rewrite(params, area){
         const route = (typeof params === 'string') ? this.router.match(params) : new Route(params, area);
-        const actionTrigger = new ActionTrigger({
+        const actionTrigger = new (require('./ActionTrigger'))({
             ctx: this.ctx,
             route,
             router: this.router
