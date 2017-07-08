@@ -38,7 +38,7 @@ module.exports = class ActionTrigger{
         this._controllerName = route.controllerFileName;
         this._actionName = route.actionMethodName;
     }
-    build(){
+    build(rewriteController){
         const RouteController = findControllerByPath(path.resolve(
             this._route.controllersRoot,
             this._controllerName
@@ -48,20 +48,21 @@ module.exports = class ActionTrigger{
             ctx: this._ctx,
             route: this._route,
             router: this._router,
-            view: this._view
+            view: this._view,
+            rewriteController
         });
     }
-    async trigger(){
-        if(!this._controller) this.build();
+    async trigger(rewriteController){
+        if(!this._controller) this.build(rewriteController);
 
         const controller = this._controller;
-        if(controller[this._actionName]){
+        if(Reflect.getPrototypeOf(controller).hasOwnProperty(this._actionName)){
             const meta = Metadata.getMetadata(controller.constructor, this._actionName);
             let result = await controller.$beforeAction();
 
             if(result!==false){
                 const args = (meta.$$params||[]).map(key=>{
-                    let searchParamFrom = ['query', 'post'];
+                    let searchParamFrom = ['query', 'body'];
                     if(meta.$$paramFrom&&meta.$$paramFrom[key]){
                         searchParamFrom = meta.$$paramFrom[key]; 
                     }
@@ -71,7 +72,7 @@ module.exports = class ActionTrigger{
                                 if(key in controller.query)
                                     return controller.query[key];
                                 break;
-                            case 'post':
+                            case 'body':
                                 if(key in controller.request.body)
                                     return controller.request.body[key];
                                 break;

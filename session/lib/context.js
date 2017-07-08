@@ -70,7 +70,9 @@ class ContextSession {
     const ctx = this.ctx;
     const opts = this.opts;
 
-    const externalKey = ctx.cookies.get(opts.key, opts);
+    const externalKey = (
+        opts.keyStore&&opts.keyStore.get&& (await opts.keyStore.get(ctx, opts.key, opts))
+      )||ctx.cookies.get(opts.key, opts);
     debug('get external key from cookie %s', externalKey);
 
     if (!externalKey) {
@@ -177,7 +179,7 @@ class ContextSession {
 
   create(val, externalKey) {
     debug('create session with val: %j externalKey: %s', val, externalKey);
-    if (this.store) this.externalKey = externalKey || uid.sync(24);
+    if (this.store) this.externalKey = externalKey || this.opts.genid && this.opts.genid(this.ctx) || uid.sync(24);
     this.session = new Session(this.ctx, val);
   }
 
@@ -231,7 +233,13 @@ class ContextSession {
     const key = opts.key;
     const externalKey = this.externalKey;
 
-    if (externalKey) await this.store.destroy(externalKey);
+    if (externalKey) {
+      await this.store.destroy(externalKey);
+      if(opts.keyStore&&opts.keyStore.destroy){
+        opts.keyStore.destroy(ctx, key, externalKey, opts);
+        return;
+      }
+    }
     ctx.cookies.set(key, '', opts);
   }
 
@@ -264,7 +272,11 @@ class ContextSession {
         changed,
         rolling: opts.rolling,
       });
-      this.ctx.cookies.set(key, externalKey, opts);
+      if(opts.keyStore&&opts.keyStore.set){
+        await opts.keyStore.set(this.ctx, key, externalKey, opts);
+      }else{
+        this.ctx.cookies.set(key, externalKey, opts);
+      }
       return;
     }
 

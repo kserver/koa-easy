@@ -86,6 +86,13 @@ function formatOpts(opts) {
     assert(is.function(store.destroy), 'store.destroy must be function');
   }
 
+  const keyStore = opts.keyStore;
+  if(keyStore){
+    assert(is.function(keyStore.get), 'keyStore.get must be function');
+    assert(is.function(keyStore.set), 'keyStore.set must be function');
+    assert(is.function(keyStore.destroy), 'keyStore.destroy must be function');
+  }
+
   const ContextStore = opts.ContextStore;
   if (ContextStore) {
     assert(is.class(ContextStore), 'ContextStore must be a class');
