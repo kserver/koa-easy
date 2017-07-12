@@ -7,7 +7,7 @@ function parseArgs(fn){
     const args = parseMethodArgs(fn);
     return args.map(arg=>{
         const matchResult = /^\/\*\s*?param\s*?\:\s*?([\s\S]+?)\s*?\*\//.exec(arg);
-        return matchResult?matchResult[1]:arg
+        return matchResult?matchResult[1].trim():arg
     });
 }
 
@@ -56,7 +56,7 @@ function decorate(Controller, method){
 module.exports = function(Controller, decorator){
     const controllerSource = Controller.toString();
     if(!controllerSource.startsWith('class ')) return;
-    ;
+    
     const properties = Object.getOwnPropertyNames(Controller.prototype);
     for(let property of properties){
         if(property==='constructor') continue;
