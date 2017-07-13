@@ -4,7 +4,7 @@ const fs = require('fs');
 
 module.exports = class SessionStore{
     constructor(dir=".koasess"){
-        this.sdir = path.resolve(os.tmpdir(), '.koasess-zktravel-manage');
+        this.sdir = path.resolve(os.tmpdir(), dir);
     }
     get(key){
         const spath = path.resolve(this.sdir, key);
