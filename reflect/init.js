@@ -59,8 +59,7 @@ module.exports = function(Controller, decorator){
     
     const properties = Object.getOwnPropertyNames(Controller.prototype);
     for(let property of properties){
-        if(property==='constructor') continue;
-        if(property.startsWith('$')) continue;
+        if(!property.startsWith('action')) continue;
         const fn = Controller.prototype[property];
         if(typeof fn !== 'function') continue;
 

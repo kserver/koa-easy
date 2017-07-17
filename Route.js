@@ -14,7 +14,7 @@ module.exports = class Route {
         this[areaKey] = area;
 
         this[controllerFileNameKey] = upperFirstLetter(camelCase(params.controller)) + 'Controller';
-        this[actionMethodNameKey] = camelCase(params.action);
+        this[actionMethodNameKey] = camelCase(`action-${params.action}`);
 
         let moduleRoot = appRoot;
         if(area){
